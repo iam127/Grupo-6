@@ -1,0 +1,47 @@
+class TextEditor:
+    def __init__(self):
+        self.text = ""
+        self.history = []
+
+    def type(self, new_text):
+        self.history.append(self.text)
+        self.text += new_text
+
+    def delete(self, count):
+        self.history.append(self.text)
+        self.text = self.text[:-count]
+
+    def undo(self):
+        if self.history:
+            self.text = self.history.pop()
+        else:
+            print("Nothing to undo.")
+
+    def get_text(self):
+        return self.text
+
+def test_text_editor():
+    editor = TextEditor()
+    
+    editor.type("Hello")
+    print(editor.get_text())  
+
+    editor.type(" World")
+    print(editor.get_text())  
+
+    editor.delete(6)
+    print(editor.get_text())  
+
+    editor.undo()
+    print(editor.get_text())  
+
+    editor.undo()
+    print(editor.get_text()) 
+
+    editor.undo()
+    print(editor.get_text()) 
+
+    editor.undo() 
+
+if __name__ == "__main__":
+    test_text_editor()
