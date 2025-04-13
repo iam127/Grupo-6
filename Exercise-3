@@ -1,89 +1,54 @@
-class InfixEvaluator:
-    def __init__(self, expression):
-        self.expression = expression
-        self.operators = {
-            '+': 1,
-            '-': 1,
-            '*': 2,
-            '/': 2,
-            '^': 3
-        }
+class MinStack:
+    def __init__(self):
+        self.stack = []
+        self.min_stack = []
 
-    def is_operator(self, token):
-        return token in self.operators
+    def push(self, x):
+        self.stack.append(x)
+        if not self.min_stack or x <= self.min_stack[-1]:
+            self.min_stack.append(x)
 
-    def precedence(self, op):
-        return self.operators.get(op, 0)
+    def pop(self):
+        if not self.stack:
+            raise IndexError("Pop from empty stack")
+        value = self.stack.pop()
+        if value == self.min_stack[-1]:
+            self.min_stack.pop()
+        return value
 
-    def infix_to_postfix(self, tokens):
-        output = []
-        stack = []
+    def top(self):
+        if not self.stack:
+            raise IndexError("Top from empty stack")
+        return self.stack[-1]
 
-        for token in tokens:
-            if token.isnumeric():
-                output.append(token)
-            elif token == '(':
-                stack.append(token)
-            elif token == ')':
-                while stack and stack[-1] != '(':
-                    output.append(stack.pop())
-                stack.pop()  
-            else:
-                while stack and self.precedence(stack[-1]) >= self.precedence(token):
-                    output.append(stack.pop())
-                stack.append(token)
-
-        while stack:
-            output.append(stack.pop())
-
-        return output
-
-    def evaluate_postfix(self, postfix_tokens):
-        stack = []
-
-        for token in postfix_tokens:
-            if token.isnumeric():
-                stack.append(float(token))
-            else:
-                b = stack.pop()
-                a = stack.pop()
-                if token == '+':
-                    stack.append(a + b)
-                elif token == '-':
-                    stack.append(a - b)
-                elif token == '*':
-                    stack.append(a * b)
-                elif token == '/':
-                    stack.append(a / b)
-                elif token == '^':
-                    stack.append(a ** b)
-
-        return stack[0]
-
-    def evaluate(self):
-
-        tokens = self.expression.replace('(', ' ( ').replace(')', ' ) ').split()
-        postfix = self.infix_to_postfix(tokens)
-        return self.evaluate_postfix(postfix)
+    def getMin(self):
+        if not self.min_stack:
+            raise IndexError("GetMin from empty stack")
+        return self.min_stack[-1]
 
 
+# Test cases
+def test_min_stack():
+    stack = MinStack()
+    stack.push(5)
+    stack.push(3)
+    stack.push(7)
+    stack.push(2)
 
-def test_infix_evaluator():
-    expressions = [
-        ("3 + 4 * 2", 11),                  
-        ("( 3 + 4 ) * 2", 14),         
-        ("7 + 2 * ( 3 + 1 )", 15),          
-        ("10 + ( 6 / 2 )", 13),            
-        ("( 5 + 3 ) * ( 2 + 2 )", 32)      
-    ]
+    print("Top:", stack.top())         
+    print("Min:", stack.getMin())      
 
-    for expr, expected in expressions:
-        evaluator = InfixEvaluator(expr)
-        result = evaluator.evaluate()
-        print(f"Expression: {expr} = {result}")
-        assert abs(result - expected) < 1e-6, f"Expected {expected}, got {result}"
+    stack.pop()                        
+    print("Min after pop:", stack.getMin()) 
 
-    print("All infix evaluation tests passed!")
+    stack.pop()                       
+    print("Top after pop:", stack.top())     
+    print("Min:", stack.getMin())            
+
+    stack.pop()                        
+    print("Min:", stack.getMin())           
+
+    print("All tests passed!")
 
 if __name__ == "__main__":
-    test_infix_evaluator()
+    test_min_stack()
