@@ -1,1 +1,39 @@
+class StringReverser:
+    def __init__(self, input_string):
+        self.input_string = input_string
+        self.stack = []
 
+    def reverse(self):
+        for char in self.input_string:
+            self.stack.append(char)
+
+        reversed_string = ''
+        while self.stack:
+            reversed_string += self.stack.pop()
+
+        return reversed_string
+
+
+def test_string_reverser():
+    test_cases = [
+        ("hello", "olleh"),
+        ("12345", "54321"),
+        ("Stack", "kcatS"),
+    ]
+
+    for original, expected in test_cases:
+        reverser = StringReverser(original)
+        result = reverser.reverse()
+        print(f"Original: {original} | Reversed: {result}")
+        assert result == expected, f"Expected {expected}, got {result}"
+
+    print("All test cases passed!")
+
+reverser = StringReverser("hello")
+print(reverser.reverse())  
+
+reverser = StringReverser("OpenAI")
+print(reverser.reverse())  
+
+reverser = StringReverser("12345")
+print(reverser.reverse())  
