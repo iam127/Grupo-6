@@ -1,0 +1,89 @@
+class InfixEvaluator:
+    def __init__(self, expression):
+        self.expression = expression
+        self.operators = {
+            '+': 1,
+            '-': 1,
+            '*': 2,
+            '/': 2,
+            '^': 3
+        }
+
+    def is_operator(self, token):
+        return token in self.operators
+
+    def precedence(self, op):
+        return self.operators.get(op, 0)
+
+    def infix_to_postfix(self, tokens):
+        output = []
+        stack = []
+
+        for token in tokens:
+            if token.isnumeric():
+                output.append(token)
+            elif token == '(':
+                stack.append(token)
+            elif token == ')':
+                while stack and stack[-1] != '(':
+                    output.append(stack.pop())
+                stack.pop()  
+            else:
+                while stack and self.precedence(stack[-1]) >= self.precedence(token):
+                    output.append(stack.pop())
+                stack.append(token)
+
+        while stack:
+            output.append(stack.pop())
+
+        return output
+
+    def evaluate_postfix(self, postfix_tokens):
+        stack = []
+
+        for token in postfix_tokens:
+            if token.isnumeric():
+                stack.append(float(token))
+            else:
+                b = stack.pop()
+                a = stack.pop()
+                if token == '+':
+                    stack.append(a + b)
+                elif token == '-':
+                    stack.append(a - b)
+                elif token == '*':
+                    stack.append(a * b)
+                elif token == '/':
+                    stack.append(a / b)
+                elif token == '^':
+                    stack.append(a ** b)
+
+        return stack[0]
+
+    def evaluate(self):
+
+        tokens = self.expression.replace('(', ' ( ').replace(')', ' ) ').split()
+        postfix = self.infix_to_postfix(tokens)
+        return self.evaluate_postfix(postfix)
+
+
+
+def test_infix_evaluator():
+    expressions = [
+        ("3 + 4 * 2", 11),                  
+        ("( 3 + 4 ) * 2", 14),         
+        ("7 + 2 * ( 3 + 1 )", 15),          
+        ("10 + ( 6 / 2 )", 13),            
+        ("( 5 + 3 ) * ( 2 + 2 )", 32)      
+    ]
+
+    for expr, expected in expressions:
+        evaluator = InfixEvaluator(expr)
+        result = evaluator.evaluate()
+        print(f"Expression: {expr} = {result}")
+        assert abs(result - expected) < 1e-6, f"Expected {expected}, got {result}"
+
+    print("All infix evaluation tests passed!")
+
+if __name__ == "__main__":
+    test_infix_evaluator()
