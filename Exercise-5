@@ -1,47 +1,27 @@
-class TextEditor:
-    def __init__(self):
-        self.text = ""
-        self.history = []
+import re
 
-    def type(self, new_text):
-        self.history.append(self.text)
-        self.text += new_text
+def is_balanced_html(html):
+    tag_pattern = re.compile(r'</?([a-zA-Z1-6]+)[^>]*>')
 
-    def delete(self, count):
-        self.history.append(self.text)
-        self.text = self.text[:-count]
+    stack = []
 
-    def undo(self):
-        if self.history:
-            self.text = self.history.pop()
+    tags = tag_pattern.findall(html)
+
+    for tag in tags:
+        if not tag.startswith('/'):
+            stack.append(tag)
         else:
-            print("Nothing to undo.")
+            if stack and stack[-1] == tag[1:]:
+                stack.pop()
+            else:
+                return False
 
-    def get_text(self):
-        return self.text
+    return len(stack) == 0
 
-def test_text_editor():
-    editor = TextEditor()
-    
-    editor.type("Hello")
-    print(editor.get_text())  
+html1 = "<div><h1>Title</h1><p>Some content</p></div>"
+html2 = "<div><h1>Title</p><p>Some content</div>"
+html3 = "<div><h1>Title</h1><p>Some content</div>"
 
-    editor.type(" World")
-    print(editor.get_text())  
-
-    editor.delete(6)
-    print(editor.get_text())  
-
-    editor.undo()
-    print(editor.get_text())  
-
-    editor.undo()
-    print(editor.get_text()) 
-
-    editor.undo()
-    print(editor.get_text()) 
-
-    editor.undo() 
-
-if __name__ == "__main__":
-    test_text_editor()
+print(is_balanced_html(html1))  
+print(is_balanced_html(html2))  
+print(is_balanced_html(html3))  
